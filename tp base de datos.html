@@ -3,38 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Conectar a Supabase</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="text/javascript" src="scripts.js"></script>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #888;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f3f3f3;
+    }
+  </style>
 </head>
 <body>
-  <h1>Tareas desde Supabase</h1>
-  <ul id="lista-tareas"></ul>
+  <h1>Trabajo de Base de Datos</h1>
+  <h2>Lista de empleados desde Supabase</h2>
+  <div id="tabla-empleados"></div>
+  
+  <h2>Lista de tareas desde Supabase</h2>
+  <div id="tabla-tareas"></div>
 
-  <script>
-    const SUPABASE_URL = 'https://hxsxzttyqgeqyzkcjbez.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4c3h6dHR5cWdlcXl6a2NqYmV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk3Mzg0NTksImV4cCI6MjA2NTMxNDQ1OX0.31yTeUV0rE_f-9PXMs3BUYKDhN4damKXX9bwCIIhwQA';
-
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    async function obtenerTareas() {
-      let { data: tarea, error } = await supabaseClient
-        .from('tarea')
-        .select('*');
-        
-      if (error) {
-        console.error('Error al obtener las tareas:', error.message);
-        return;
-      }
-
-      const lista = document.getElementById('lista-tareas');
-      tarea.forEach(tarea => {
-        const item = document.createElement('li');
-        item.textContent = `Estado: ${tarea.estado}`;
-        lista.appendChild(item);
-      });
-    }
-
-    obtenerTareas();
-  </script>
+  <h2>Lista de asignación de tareas desde Supabase</h2>
+  <div id="tabla-tiene"></div>
 </body>
 </html>
