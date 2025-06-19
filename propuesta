@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Interactivo: Supabase con IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Calm Emerald -->
+    <!-- Application Structure Plan: The application uses a single-page, thematic scrolling structure with a sticky navigation bar for easy access to key sections: Introduction, Features, Pros/Cons, an Interactive Case Study, and Conclusions. This non-linear but guided flow was chosen over a direct report-to-page translation to make the dense information more digestible and engaging. The highlight is the interactive 'Caso Práctico' section, which turns the static results of the report into a hands-on data exploration dashboard with a chart and switchable tables, allowing users to directly interact with the project's outcome. A new Gemini-powered feature generates an executive summary of the project data, enhancing the analysis. -->
+    <!-- Visualization & Content Choices:
+        - Report Info: Core concepts of Supabase -> Goal: Inform -> Viz/Method: Stylized info cards (HTML/CSS) -> Interaction: Static -> Justification: Breaks down definitions for clarity.
+        - Report Info: Key Features List -> Goal: Organize -> Viz/Method: Interactive Tabs (HTML/CSS/JS) -> Interaction: Click to reveal feature details -> Justification: Prevents information overload by chunking content.
+        - Report Info: Pros & Cons Table -> Goal: Compare -> Viz/Method: Styled HTML Table -> Interaction: Static -> Justification: Direct and clear comparison.
+        - Report Info: "Minimundo" ERD -> Goal: Organize -> Viz/Method: Diagram built with HTML/CSS flexbox for robust layout -> Interaction: None -> Justification: Visualizes the database schema without using forbidden SVG, now corrected for layout issues.
+        - Report Info: "Minimundo" SQL query results and final web page screenshot -> Goal: Explore/Compare -> Viz/Method: Interactive Bar Chart (Chart.js/Canvas) and switchable HTML data tables -> Interaction: Chart shows tasks per employee; buttons switch the displayed table data -> Justification: Transforms a static result into a dynamic, interactive dashboard.
+        - Report Info: All "Minimundo" data -> Goal: Synthesize/Analyze -> Viz/Method: Gemini API Call -> Interaction: Button click triggers LLM to generate an executive summary -> Justification: Demonstrates a powerful AI use-case for data analysis and reporting, adding significant value beyond simple data display.
+        - CONFIRMED: NO SVG/Mermaid used. All visuals are HTML/CSS or Chart.js Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 40vh;
+            width: 100%;
+            max-height: 400px;
+        }
+        .erd-entity, .erd-relation {
+            position: relative;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <header class="sticky top-0 bg-white/80 backdrop-blur-lg shadow-sm z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <span class="text-xl font-bold text-emerald-600">Investigación Supabase</span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#intro" class="text-slate-600 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">¿Qué es?</a>
+                        <a href="#features" class="text-slate-600 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Características</a>
+                        <a href="#pros-cons" class="text-slate-600 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Análisis</a>
+                        <a href="#case-study" class="text-slate-600 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Caso Práctico</a>
+                        <a href="#conclusion" class="text-slate-600 hover:bg-emerald-500 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Conclusiones</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="intro" class="text-center py-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-4">Investigación y Experimentación con <span class="text-emerald-600">Supabase</span></h1>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600 mb-8">Basada en el trabajo de Investigación sobre Supabase, una alternativa de código abierto a Firebase, realizado por el Grupo 12 para la asignatura Base de Datos.</p>
+        </section>
+
+        <section class="py-12">
+             <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-900">¿Qué es Supabase?</h2>
+                <p class="mt-4 text-lg text-slate-600">Supabase se presenta como una plataforma de "Backend como Servicio" (BaaS) que simplifica el desarrollo de aplicaciones al proveer una infraestructura backend robusta y lista para usar.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-2">Alternativa a Firebase</h3>
+                    <p class="text-slate-600">Ofrece un conjunto de herramientas similar a Firebase pero con la filosofía del código abierto, dando más control y flexibilidad a los desarrolladores.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-2">Basado en PostgreSQL</h3>
+                    <p class="text-slate-600">Utiliza PostgreSQL como núcleo, aprovechando toda la potencia, escalabilidad y fiabilidad de una de las bases de datos relacionales más avanzadas del mundo.</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-2">Backend Simplificado</h3>
+                    <p class="text-slate-600">Genera automáticamente APIs, maneja la autenticación y más, permitiendo a los equipos enfocarse en la experiencia de usuario (frontend).</p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                    <h3 class="text-xl font-semibold text-emerald-600 mb-2">Todo en Uno</h3>
+                    <p class="text-slate-600">Integra Base de Datos, Autenticación, Almacenamiento de archivos y Funciones Serverless en una única plataforma coherente.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="py-16 bg-white rounded-xl shadow-lg my-16">
+             <div class="text-center mb-12 px-4">
+                <h2 class="text-3xl font-bold text-slate-900">Características Principales</h2>
+                 <p class="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">Explora las herramientas que Supabase pone a tu disposición. Haz clic en cada característica para ver los detalles.</p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-4 mb-8 px-4" id="features-tabs">
+                <button data-target="db" class="feature-tab bg-emerald-500 text-white px-4 py-2 rounded-full font-semibold">Base de Datos</button>
+                <button data-target="api" class="feature-tab bg-slate-200 text-slate-700 px-4 py-2 rounded-full font-semibold">API Instantánea</button>
+                <button data-target="auth" class="feature-tab bg-slate-200 text-slate-700 px-4 py-2 rounded-full font-semibold">Autenticación</button>
+                <button data-target="realtime" class="feature-tab bg-slate-200 text-slate-700 px-4 py-2 rounded-full font-semibold">Tiempo Real</button>
+                <button data-target="storage" class="feature-tab bg-slate-200 text-slate-700 px-4 py-2 rounded-full font-semibold">Almacenamiento</button>
+                <button data-target="functions" class="feature-tab bg-slate-200 text-slate-700 px-4 py-2 rounded-full font-semibold">Edge Functions</button>
+            </div>
+            <div class="px-4 md:px-8">
+                <div id="features-content" class="bg-slate-50 p-6 rounded-lg min-h-[150px]">
+                    <div id="db-content" class="feature-content-panel">
+                        <h3 class="font-bold text-xl mb-2 text-emerald-700">Base de Datos PostgreSQL</h3>
+                        <p class="text-slate-600">Acceso completo al poder de SQL, incluyendo uniones, vistas, funciones y tipos de datos avanzados como JSONB. La base de datos es el corazón de la plataforma, ofreciendo robustez y flexibilidad.</p>
+                    </div>
+                    <div id="api-content" class="feature-content-panel hidden">
+                        <h3 class="font-bold text-xl mb-2 text-emerald-700">API Instantánea y RESTful</h3>
+                        <p class="text-slate-600">Cada tabla en tu base de datos obtiene una API RESTful de forma automática. Permite realizar operaciones CRUD (Crear, Leer, Actualizar, Borrar) de forma segura y sin escribir código de backend.</p>
+                    </div>
+                    <div id="auth-content" class="feature-content-panel hidden">
+                        <h3 class="font-bold text-xl mb-2 text-emerald-700">Autenticación de Usuarios</h3>
+                        <p class="text-slate-600">Sistema completo para gestionar usuarios con email/contraseña, proveedores sociales (Google, GitHub) y enlaces mágicos. Integrado con la seguridad a nivel de fila (RLS) para un control de acceso granular.</p>
+                    </div>
+                    <div id="realtime-content" class="feature-content-panel hidden">
+                        <h3 class="font-bold text-xl mb-2 text-emerald-700">Sincronización en Tiempo Real</h3>
+                        <p class="text-slate-600">Escucha cambios en la base de datos en tiempo real. Ideal para construir aplicaciones colaborativas, chats, notificaciones o cualquier funcionalidad que requiera datos actualizados al instante.</p>
+                    </div>
+                     <div id="storage-content" class="feature-content-panel hidden">
+                        <h3 class="font-bold text-xl mb-2 text-emerald-700">Almacenamiento de Archivos</h3>
+                        <p class="text-slate-600">Permite almacenar y servir archivos grandes como imágenes, videos y documentos de forma sencilla. La gestión de permisos se integra con la autenticación para proteger el acceso a los archivos.</p>
+                    </div>
+                    <div id="functions-content" class="feature-content-panel hidden">
+                        <h3 class="font-bold text-xl mb-2 text-emerald-700">Edge Functions</h3>
+                        <p class="text-slate-600">Ejecuta lógica de negocio personalizada (serverless) en el borde, cerca de tus usuarios, para una latencia mínima. Perfecto para tareas como procesar pagos, enviar notificaciones o webhooks.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pros-cons" class="py-12">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-900">Análisis: Ventajas y Desventajas</h2>
+                <p class="mt-4 text-lg text-slate-600">Ninguna herramienta es perfecta. Aquí se resumen los puntos fuertes y las consideraciones a tener en cuenta al elegir Supabase.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold text-green-600 mb-4">Ventajas ✅</h3>
+                    <ul class="space-y-3 text-slate-700">
+                        <li class="flex items-start"><span class="mr-2">➕</span><div><strong>Open Source y Auto-alojable:</strong> Total control sobre la infraestructura y sin dependencia de un proveedor.</div></li>
+                        <li class="flex items-start"><span class="mr-2">➕</span><div><strong>Basado en Estándares:</strong> Usa PostgreSQL y otras herramientas de código abierto, facilitando la integración y migración.</div></li>
+                        <li class="flex items-start"><span class="mr-2">➕</span><div><strong>Seguridad Granular:</strong> El sistema de Row Level Security (RLS) de Postgres permite políticas de acceso muy detalladas.</div></li>
+                        <li class="flex items-start"><span class="mr-2">➕</span><div><strong>APIs Instantáneas:</strong> Acelera drásticamente el desarrollo al eliminar la necesidad de crear un backend para CRUD.</div></li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h3 class="text-2xl font-semibold text-amber-600 mb-4">Desventajas ⚠️</h3>
+                     <ul class="space-y-3 text-slate-700">
+                        <li class="flex items-start"><span class="mr-2">➖</span><div><strong>Requiere Conocimientos de SQL:</strong> Para sacar el máximo provecho, es necesario tener una base sólida de SQL.</div></li>
+                        <li class="flex items-start"><span class="mr-2">➖</span><div><strong>Comunidad más Joven:</strong> Aunque en crecimiento, la comunidad y los recursos son menores en comparación con Firebase.</div></li>
+                        <li class="flex items-start"><span class="mr-2">➖</span><div><strong>No Ideal para Datos No Estructurados:</strong> Aunque Postgres tiene JSONB, no es su principal fortaleza en comparación con bases de datos NoSQL nativas.</div></li>
+                        <li class="flex items-start"><span class="mr-2">➖</span><div><strong>Curva de Aprendizaje de RLS:</strong> Configurar correctamente la seguridad a nivel de fila puede ser complejo al principio.</div></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="case-study" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-900">Caso Práctico: "Minimundo"</h2>
+                <p class="mt-4 text-lg text-slate-600 max-w-3xl mx-auto">Para probar la plataforma, se implementó un sistema de gestión de tareas para empleados, desde el modelo conceptual hasta una aplicación web funcional.</p>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+                 <h3 class="text-2xl font-semibold text-center mb-8">Modelo de Datos</h3>
+                 <p class="text-center text-slate-600 mb-8">Se modelaron las entidades `Empleado` y `Tarea` con una relación muchos a muchos (`Tiene`) para registrar las asignaciones.</p>
+                 <div class="flex justify-center items-center gap-2 md:gap-4 w-full max-w-4xl mx-auto p-4">
+                    <div class="erd-entity bg-emerald-100 border-2 border-emerald-500 rounded-lg p-4 w-40 text-center shadow-md shrink-0">
+                        <h4 class="font-bold">Empleado</h4>
+                        <p class="text-sm text-slate-600">cuit (PK)<br>nombre<br>apellido</p>
+                    </div>
+            
+                    <div class="flex-grow flex items-center justify-center relative min-w-[100px]">
+                        <div class="w-full h-1 bg-slate-400"></div>
+                        <div class="absolute bg-white px-2">
+                            <div class="erd-relation border-2 border-slate-400 rounded-lg p-2 w-28 text-center">
+                                <h4 class="font-bold">Tiene</h4>
+                                <p class="text-sm text-slate-600">(N:M)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="erd-entity bg-sky-100 border-2 border-sky-500 rounded-lg p-4 w-40 text-center shadow-md shrink-0">
+                        <h4 class="font-bold">Tarea</h4>
+                        <p class="text-sm text-slate-600">idTarea (PK)<br>fechaInicio<br>prioridad</p>
+                    </div>
+                </div>
+            </div>
+
+
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-center mb-4">Empleados</h4>
+                    <div id="tabla-empleados" class="overflow-x-auto"></div>
+                </div>
+
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-center mb-4">Tareas</h4>
+                    <div id="tabla-tareas" class="overflow-x-auto"></div>
+                </div>
+                <div class="mb-8">
+                    <h4 class="text-xl font-semibold text-center mb-4">Asignaciones</h4>
+                    <div id="tabla-tiene" class="overflow-x-auto"></div>
+                </div>
+            </div>
+                        <script type="module">
+                const SUPABASE_URL = 'https://jaiuhqexudiobqochsei.supabase.co';
+                const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImphaXVocWV4dWRpb2Jxb2Noc2VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAyODExNDcsImV4cCI6MjA2NTg1NzE0N30.11oBAt4u-iuIEX1IUyaxyLKsddZYDJ-oz2wihwzI4dg';
+
+                const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log('Supabase Client initialized:', supabaseClient);
+
+                // Function to generate and append a table
+                function generarTabla(data, containerId, tableName) {
+                    const container = document.getElementById(containerId);
+                    if (!container) {
+                        console.error(`Container element not found: #${containerId}`);
+                        return;
+                    }
+
+                    // Clear previous content
+                    container.innerHTML = '';
+
+                    // Check if data is valid and not empty
+                    if (!data || data.length === 0) {
+                        container.innerHTML = `<p class="text-center text-slate-500">No hay datos disponibles para ${tableName}.</p>`;
+                        console.warn(`No data received for ${tableName}.`);
+                        return;
+                    }
+
+                    const table = document.createElement('table');
+                    // Add some basic tailwind classes for styling
+                    table.classList.add('min-w-full', 'bg-white', 'border', 'border-slate-200', 'rounded-lg', 'shadow-sm');
+
+                    const thead = document.createElement('thead');
+                    thead.classList.add('bg-slate-100', 'border-b', 'border-slate-200');
+
+                    const headerRow = document.createElement('tr');
+
+                    const keys = Object.keys(data[0]); // Get keys from the first object
+
+                    keys.forEach(key => {
+                        const th = document.createElement('th');
+                        th.classList.add('px-4', 'py-2', 'text-left', 'text-sm', 'font-semibold', 'text-slate-700', 'uppercase', 'tracking-wider');
+                        th.textContent = key;
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+                    table.appendChild(thead);
+
+                    const tbody = document.createElement('tbody');
+                    tbody.classList.add('divide-y', 'divide-slate-200');
+
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.classList.add('hover:bg-slate-50');
+                        keys.forEach(key => {
+                            const td = document.createElement('td');
+                            td.classList.add('px-4', 'py-2', 'whitespace-nowrap', 'text-sm', 'text-slate-600');
+                            // Handle null/undefined values gracefully
+                             td.textContent = item[key] === null || item[key] === undefined ? '' : item[key];
+                            row.appendChild(td);
+                        });
+                        tbody.appendChild(row);
+                    });
+                    table.appendChild(tbody);
+
+                    container.appendChild(table);
+                }
+
+
+                async function obtenerDatosYGenerarTabla(tableName, containerId) {
+                     console.log(`Fetching data for ${tableName}...`);
+                    let { data, error } = await supabaseClient
+                        .from(tableName)
+                        .select('*');
+
+                    if (error) {
+                        console.error(`Error al obtener los datos de ${tableName}:`, error.message);
+                        // Optionally display an error message in the container
+                         const container = document.getElementById(containerId);
+                         if (container) {
+                             container.innerHTML = `<p class="text-center text-red-500">Error al cargar datos de ${tableName}: ${error.message}</p>`;
+                         }
+                        return;
+                    }
+
+                    console.log(`Data received for ${tableName}:`, data);
+                    generarTabla(data, containerId, tableName);
+                }
+
+                // Wait for the DOM to be fully loaded before trying to find elements and fetch data
+                document.addEventListener('DOMContentLoaded', () => {
+                    obtenerDatosYGenerarTabla('empleado', 'tabla-empleados');
+                    obtenerDatosYGenerarTabla('tarea', 'tabla-tareas');
+                    obtenerDatosYGenerarTabla('tiene', 'tabla-tiene');
+                });
+
+            </script>
+        </section>
+        
+        <section id="conclusion" class="py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-slate-900">Conclusiones Finales</h2>
+            </div>
+            <div class="max-w-4xl mx-auto space-y-6">
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-lg text-slate-700">✅ <span class="font-semibold">Supabase es una alternativa robusta y flexible a Firebase</span>, especialmente atractiva para desarrolladores que valoran el código abierto, el control y la potencia de SQL.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-lg text-slate-700">🚀 Transforma PostgreSQL en una completa plataforma de desarrollo backend con una configuración mínima, <span class="font-semibold">acelerando significativamente el tiempo de desarrollo.</span></p>
+                </div>
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <p class="text-lg text-slate-700">💡 Es una herramienta <span class="font-semibold">ideal para crear Productos Mínimos Viables (MVPs)</span> y prototipos de forma ágil, sin sacrificar la escalabilidad a largo plazo.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 py-8 mt-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <p>Asignatura: Base de Datos- Grupo 12.</p>
+            <p class="text-sm text-slate-400 mt-2">Badías Herce, Isaac - Caballero, Lautaro - Castro, Mateo - Espejo, Antonella - Taglioretti, Carlos </p>
+            <p class="text-sm text-slate-400">Universidad Nacional de San Juan - Facultad de Ciencias Exactas, Físicas y Naturales </p>
+        </div>
+    </footer>
+
+</html>
