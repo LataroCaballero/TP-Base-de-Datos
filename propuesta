@@ -10,17 +10,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Chosen Palette: Calm Emerald -->
-    <!-- Application Structure Plan: The application uses a single-page, thematic scrolling structure with a sticky navigation bar for easy access to key sections: Introduction, Features, Pros/Cons, an Interactive Case Study, and Conclusions. This non-linear but guided flow was chosen over a direct report-to-page translation to make the dense information more digestible and engaging. The highlight is the interactive 'Caso Práctico' section, which turns the static results of the report into a hands-on data exploration dashboard with a chart and switchable tables, allowing users to directly interact with the project's outcome. A new Gemini-powered feature generates an executive summary of the project data, enhancing the analysis. -->
-    <!-- Visualization & Content Choices:
-        - Report Info: Core concepts of Supabase -> Goal: Inform -> Viz/Method: Stylized info cards (HTML/CSS) -> Interaction: Static -> Justification: Breaks down definitions for clarity.
-        - Report Info: Key Features List -> Goal: Organize -> Viz/Method: Interactive Tabs (HTML/CSS/JS) -> Interaction: Click to reveal feature details -> Justification: Prevents information overload by chunking content.
-        - Report Info: Pros & Cons Table -> Goal: Compare -> Viz/Method: Styled HTML Table -> Interaction: Static -> Justification: Direct and clear comparison.
-        - Report Info: "Minimundo" ERD -> Goal: Organize -> Viz/Method: Diagram built with HTML/CSS flexbox for robust layout -> Interaction: None -> Justification: Visualizes the database schema without using forbidden SVG, now corrected for layout issues.
-        - Report Info: "Minimundo" SQL query results and final web page screenshot -> Goal: Explore/Compare -> Viz/Method: Interactive Bar Chart (Chart.js/Canvas) and switchable HTML data tables -> Interaction: Chart shows tasks per employee; buttons switch the displayed table data -> Justification: Transforms a static result into a dynamic, interactive dashboard.
-        - Report Info: All "Minimundo" data -> Goal: Synthesize/Analyze -> Viz/Method: Gemini API Call -> Interaction: Button click triggers LLM to generate an executive summary -> Justification: Demonstrates a powerful AI use-case for data analysis and reporting, adding significant value beyond simple data display.
-        - CONFIRMED: NO SVG/Mermaid used. All visuals are HTML/CSS or Chart.js Canvas. -->
-    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
         body {
             font-family: 'Inter', sans-serif;
